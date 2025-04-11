@@ -5,7 +5,8 @@ modern web technologies. It demonstrates the power of Deno, the Fresh web
 framework, Deno KV for persistence, and Server-Sent Events (SSE) for instant
 updates across connected clients.
 
-![Fairway Tasks Logo](static/logo.svg)
+![Fairway Tasks Logo](static/fairway-tasks.png)
+
 <!-- Assuming logo.svg is in the static folder -->
 
 <!-- TODO: Add a screenshot or GIF of the application in action -->
