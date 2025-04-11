@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { Task } from "../types/task.ts";
+import { sseEventDecoder, Task } from "../types/task.ts";
 
 export default function TaskInput({ initial }: { initial: Task[] }) {
   const [tasks, setTasks] = useState<Task[]>(initial);
@@ -23,14 +23,20 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
     const sse = new EventSource("/api/stream");
     sse.onmessage = (msg) => {
       const payload = JSON.parse(msg.data);
-      // TODO: Use jsonous to decode the payload
-      if (payload.type === "add") {
-        setTasks((prev) => [...prev, payload.task]);
-      } else if (payload.type === "complete") {
-        setTasks((prev) =>
-          prev.map((t) => t.id === payload.id ? { ...t, completed: true } : t)
-        );
-      }
+      sseEventDecoder.decodeAny(payload).cata({
+        Ok: (event) => {
+          if (event.type === "add") {
+            setTasks((prev) => [...prev, event.task]);
+          } else if (event.type === "complete") {
+            setTasks((prev) =>
+              prev.map((t) => t.id === event.id ? { ...t, completed: true } : t)
+            );
+          }
+        },
+        Err: (err) => {
+          console.error(err);
+        },
+      });
     };
     return () => sse.close();
   }, []);
@@ -73,8 +79,9 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
                 type="button"
                 onClick={() => complete(task.id)}
                 class="text-xs text-blue-600"
+                alt="Complete"
               >
-                Complete
+                ✅ Complete
               </button>
             )}
           </li>

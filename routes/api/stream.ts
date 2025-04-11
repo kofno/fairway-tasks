@@ -1,4 +1,5 @@
 import { Handlers } from "$fresh/server.ts";
+import { SseEvent } from "../../types/task.ts";
 
 /**
  * A set that holds `WritableStreamDefaultWriter` instances representing
@@ -64,7 +65,7 @@ export const handler: Handlers = {
  *
  * @param data - The data to be broadcasted to all clients. It can be of any type.
  */
-export function broadcast(data: unknown) {
+export function broadcast(data: SseEvent) {
   const msg = `data: ${JSON.stringify(data)}\n\n`;
   for (const writer of clients) {
     writer.write(new TextEncoder().encode(msg));
