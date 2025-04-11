@@ -63,7 +63,7 @@ export const handler: Handlers = {
  * This function takes an input `data`, serializes it to a JSON string,
  * and sends it to all clients currently connected via a writable stream.
  *
- * @param data - The data to be broadcasted to all clients. It can be of any type.
+ * @param data - The data to be broadcasted to all clients. It must be an SseEvent.
  */
 export function broadcast(data: SseEvent) {
   const msg = `data: ${JSON.stringify(data)}\n\n`;
