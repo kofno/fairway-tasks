@@ -28,7 +28,13 @@ const sseCompleteEventDecoder = createDecoderFromStructure({
 });
 type CompleteEvent = InferType<typeof sseCompleteEventDecoder>;
 
-export type SseEvent = AddEvent | CompleteEvent;
+const sseDeleteEventDecoder = createDecoderFromStructure({
+  type: stringLiteral("delete"),
+  id: string,
+});
+type DeleteEvent = InferType<typeof sseDeleteEventDecoder>;
+
+export type SseEvent = AddEvent | CompleteEvent | DeleteEvent;
 
 export const sseEventDecoder = new Decoder<SseEvent>((value) => {
   const addResult = sseAddEventDecoder.decodeAny(value);
@@ -39,5 +45,10 @@ export const sseEventDecoder = new Decoder<SseEvent>((value) => {
   if (completeResult.isOk()) {
     return completeResult;
   }
+  const deleteResult = sseDeleteEventDecoder.decodeAny(value);
+  if (deleteResult.isOk()) {
+    return deleteResult;
+  }
+  // If none of the decoders succeeded, return an error
   return err(`Invalid event: ${safeStringify(value)}`);
 });
