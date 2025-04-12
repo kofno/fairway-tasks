@@ -54,3 +54,13 @@ export async function completeTask(id: string): Promise<void> {
     await kv.set(key, { ...task.value, completed: true });
   }
 }
+
+/**
+ * Deletes a task from the key-value store.
+ *
+ * @param id - The unique identifier of the task to be deleted.
+ * @returns A promise that resolves when the task is successfully deleted.
+ */
+export async function deleteTask(id: string): Promise<void> {
+  await kv.delete(["tasks", id]);
+}

@@ -19,6 +19,12 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
     });
   }
 
+  function remove(id: string) {
+    fetch(`/api/tasks?id=${id}`, {
+      method: "DELETE",
+    });
+  }
+
   useEffect(() => {
     const sse = new EventSource("/api/stream");
     sse.onmessage = (msg) => {
@@ -31,6 +37,8 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
             setTasks((prev) =>
               prev.map((t) => t.id === event.id ? { ...t, completed: true } : t)
             );
+          } else if (event.type === "delete") {
+            setTasks((prev) => prev.filter((t) => t.id !== event.id));
           }
         },
         Err: (err) => {
@@ -70,10 +78,12 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
           <li
             key={task.id}
             class={`p-2 rounded border flex justify-between items-center ${
-              task.completed ? "line-through text-gray-500" : ""
+              task.completed ? "text-gray-500" : ""
             }`}
           >
-            <span>{task.text}</span>
+            <span class={task.completed ? "line-through" : ""}>
+              {task.text}
+            </span>
             {!task.completed && (
               <button
                 type="button"
@@ -82,6 +92,16 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
                 alt="Complete"
               >
                 ✅ Complete
+              </button>
+            )}
+            {task.completed && (
+              <button
+                type="button"
+                onClick={() => remove(task.id)}
+                class="text-xs text-red-600"
+                alt="Delete"
+              >
+                🗑️ Delete
               </button>
             )}
           </li>

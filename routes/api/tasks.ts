@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { Task } from "../../types/task.ts";
-import { addTask, completeTask, getTasks } from "../../utils/kv.ts";
+import { addTask, completeTask, deleteTask, getTasks } from "../../utils/kv.ts";
 import { broadcast } from "./stream.ts";
 
 export const handler: Handlers = {
@@ -37,6 +37,19 @@ export const handler: Handlers = {
 
     await completeTask(id);
     broadcast({ type: "complete", id });
+
+    return new Response(null, { status: 204 });
+  },
+
+  async DELETE(req) {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return new Response("Missing ID", { status: 400 });
+    }
+    await deleteTask(id);
+    broadcast({ type: "delete", id });
 
     return new Response(null, { status: 204 });
   },
