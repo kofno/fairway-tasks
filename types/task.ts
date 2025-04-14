@@ -34,4 +34,4 @@ export const sseEventDecoder = discriminatedUnion("type", {
   complete: sseCompleteEventDecoder,
   delete: sseDeleteEventDecoder,
 });
-export type SSEEvent = InferType<typeof sseEventDecoder>;
+export type SseEvent = InferType<typeof sseEventDecoder>;

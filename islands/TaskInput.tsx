@@ -28,8 +28,7 @@ export default function TaskInput({ initial }: { initial: Task[] }) {
   useEffect(() => {
     const sse = new EventSource("/api/stream");
     sse.onmessage = (msg) => {
-      const payload = JSON.parse(msg.data);
-      sseEventDecoder.decodeAny(payload).cata({
+      sseEventDecoder.decodeJson(msg.data).cata({
         Ok: (event) => {
           if (event.type === "add") {
             setTasks((prev) => [...prev, event.task]);
